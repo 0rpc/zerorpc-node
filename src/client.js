@@ -9,17 +9,15 @@ var DEFAULT_TIMEOUT = 30;
 var DEFAULT_HEARTBEAT = 5;
 
 // Creates a new client
-// endpoint : string
-//      The ZeroMQ endpoint to connect to
-// options : object
+// options : Object
 //      Options associated with the client. Allowed options:
 //      * timeout (number): Seconds to wait for a response before it is
 //        considered timed out (default 30s)
 //      * heartbeat (number): Seconds in between heartbeat requests
 //        (default 5s)
-function Client(endpoint, options) {
+function Client(options) {
     options = options || {};
-    this._socket = socket.client(endpoint);
+    this._socket = socket.client();
     this._timeout = options.timeout || DEFAULT_TIMEOUT;
     this._heartbeat = options.heartbeat || DEFAULT_HEARTBEAT;
     etc.eventProxy(this._socket, this, "error");
@@ -27,14 +25,33 @@ function Client(endpoint, options) {
 
 util.inherits(Client, events.EventEmitter);
 
+//Binds to a ZeroMQ endpoint
+//endpoint : String
+//      The ZeroMQ endpoint
 Client.prototype.bind = function(endpoint) {
     this._socket.bind(endpoint);
 };
 
+//Connects to a ZeroMQ endpoint
+//endpoint : String
+//      The ZeroMQ endpoint
 Client.prototype.connect = function(endpoint) {
     this._socket.connect(endpoint);
 };
 
+//Calls a remote method
+//method : String
+//      The method name
+//args : Array
+//      The arguments to send with the invocation
+//options : Object
+//      Request-specific options that override the global client options.
+//      Allowed options:
+//      * timeout (number): Seconds to wait for a response before it is
+//        considered timed out (default 30s)
+//      * heartbeat (number): Seconds in between heartbeat requests
+//        (default 5s)
+//
 Client.prototype.invoke = function(method, args, options, callback) {
     var self = this;
 
@@ -57,6 +74,7 @@ Client.prototype.invoke = function(method, args, options, callback) {
     middleware.addTimeout(timeout, channel, callbackWrapper);
     middleware.addHeartbeat(heartbeat, channel, callbackWrapper);
 
+    //Associated callbacks to execute for various events
     var handlers = {
         "ERR": function(event) {
             if(!(event.args instanceof Array) || event.args.length != 3) {
