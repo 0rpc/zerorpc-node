@@ -149,6 +149,11 @@ Server.prototype.connect = function(endpoint) {
     this._socket.connect(endpoint);
 };
 
+//Closes the server
+Server.prototype.close = function() {
+    this._socket.close();
+};
+
 //Exposes an object to be used
 //context : Object
 //      The object to expose

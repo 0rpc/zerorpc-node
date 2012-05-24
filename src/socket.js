@@ -114,6 +114,15 @@ MultiplexingSocket.prototype.openChannel = function(srcEvent) {
     return channel;
 };
 
+//Closes the socket
+MultiplexingSocket.prototype.close = function() {
+    this._zmqSocket.close();
+
+    for(var id in this.channels) {
+        this.channels[id].close();
+    }
+}
+
 //Creates a new channel
 //envelope : Array of Buffers
 //      The ZeroMQ envelope of the remote endpoint that caused the channel to

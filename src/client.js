@@ -39,6 +39,11 @@ Client.prototype.connect = function(endpoint) {
     this._socket.connect(endpoint);
 };
 
+//Closes the client
+Client.prototype.close = function() {
+    this._socket.close();
+};
+
 //Calls a remote method
 //method : String
 //      The method name

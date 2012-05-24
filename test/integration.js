@@ -140,6 +140,26 @@ exports.testStreamError = function(test) {
     });
 };
 
+exports.testClose = function(test) {
+    test.expect(1);
+
+    var closingClient = new client.Client();
+    closingClient.connect("tcp://localhost:4242");
+
+    var hit = false;
+
+    closingClient.invoke("iter", [30, 40, 1], function(error, res, more) {
+        if(hit) {
+            throw new Error("iter() should not have been called more than once");
+        } else {
+            hit = true;
+            test.ifError(error);
+            closingClient.close();
+            test.done();
+        }
+    });
+};
+
 exports.testNonExistentMethod = function(test) {
     test.expect(3);
 
