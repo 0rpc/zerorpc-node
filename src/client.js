@@ -92,7 +92,7 @@ Client.prototype.invoke = function(method, args, options, callback) {
         },
 
         "OK": function(event) {
-            callback(undefined, event.args, false);
+            callback(undefined, event.args[0], false);
             channel.close();
         },
 

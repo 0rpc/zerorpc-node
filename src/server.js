@@ -104,8 +104,10 @@ Server.prototype._recv = function(event, heartbeat, context) {
             finish();
         } else {
             if(isFirst && !more) {
-                channel.send("OK", item);
+                //Wrap item in an array for backwards compatibility issues with ZeroRPC
+                channel.send("OK", [item]);
             } else if(item != undefined) {
+                //Stream is a newer method that does not require item to be wrapped in an array
                 channel.send("STREAM", item);
             }
 
