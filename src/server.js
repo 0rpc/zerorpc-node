@@ -95,7 +95,7 @@ Server.prototype._recv = function(event, heartbeat, context) {
     var result = function(error, item, more) {
         if(finished) {
             //This should not happen, unless there is a bug in the calling method
-            return self.emit("error", "Result callback called after the channel was closed");
+            throw new Error("Result callback called after the channel was closed");
         } else if(error) {
             //Create an error object if we were passed a string
             var errorObj = typeof(error) == 'string' ? new Error(error) : error;
