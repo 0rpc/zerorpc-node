@@ -43,8 +43,15 @@ function publicMethods(context) {
     var inspected = [];
 
     for(var name in methods) {
-        var args = ["self"].concat(getArguments(context[name]));
-        inspected.push([name, [args, null, null, null], ""]);
+        var args = getArguments(context[name]);
+
+        //Remove the first argument from the method, which should be cb
+        args.shift();
+        
+        //Add self as an argument, to align with the python version
+        var argsWithSelf = ["self"].concat(args);
+
+        inspected.push([name, [argsWithSelf, null, null, null], ""]);
     }
 
     var inspectedOutput = {methods: inspected};
