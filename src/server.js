@@ -47,7 +47,7 @@ function publicMethods(context) {
         inspected.push([name, [args, null, null, null], ""]);
     }
 
-    var inspectedOutput = [{methods: inspected}];
+    var inspectedOutput = {methods: inspected};
 
     //Inject the introspector.
     context._zerorpc_inspect = function(cb) {
