@@ -21,10 +21,9 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-var server = require("../src/server"),
-    client = require("../src/client");
+var zerorpc = require("..");
 
-var rpcServer = new server.Server();
+var rpcServer = new zerorpc.Server();
 rpcServer.bind("tcp://0.0.0.0:4242");
 
 rpcServer.expose({
@@ -75,10 +74,10 @@ rpcServer.expose({
     }
 });
 
-var rpcClient = new client.Client();
+var rpcClient = new zerorpc.Client();
 rpcClient.connect("tcp://localhost:4242");
 
-var badRpcClient = new client.Client();
+var badRpcClient = new zerorpc.Client();
 badRpcClient.connect("tcp://localhost:4040");
 
 function attachError(emitter) {
@@ -166,7 +165,7 @@ exports.testStreamError = function(test) {
 exports.testClose = function(test) {
     test.expect(1);
 
-    var closingClient = new client.Client();
+    var closingClient = new zerorpc.Client();
     closingClient.connect("tcp://localhost:4242");
 
     var hit = false;

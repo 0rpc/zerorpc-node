@@ -10,7 +10,7 @@ Servers
 
 To create a new server:
 
-    var zerorpc = require("zerorpc/server");
+    var zerorpc = require("zerorpc");
     var server = new zerorpc.Server();
 
 The constructor optionally takes in an options object. Allowable options:
@@ -32,7 +32,7 @@ Methods:
 
 Full example:
 
-    var zerorpc = require("zerorpc/server");
+    var zerorpc = require("zerorpc");
 
     var server = new zerorpc.Server();
     server.bind("tcp://0.0.0.0:4242");
@@ -64,7 +64,7 @@ Clients
 
 To create a new client:
 
-    var zerorpc = require("zerorpc/client");
+    var zerorpc = require("zerorpc");
     var client = new zerorpc.Client();
 
 The constructor optionally takes in an options object. Allowable options:
@@ -89,9 +89,9 @@ Methods:
 
 Full example:
 
-    var zerorpc = require("zerorpc/client");
+    var zerorpc = require("zerorpc");
 
-    var client = new client.Client();
+    var client = new zerorpc.Client();
     client.connect("tcp://127.0.0.1:4242");
 
     client.on("error", function(error) {
@@ -105,7 +105,7 @@ Full example:
             console.log("UPDATE:", res);
         }
 
-        if(done) {
+        if(!more) {
             console.log("Done.");
         }
     });
