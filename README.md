@@ -5,6 +5,10 @@ This is a port of [ZeroRPC](https://github.com/dotcloud/zerorpc-python) to node.
 
 This project is alpha.
 
+To install the package:
+
+    npm install zerorpc
+
 Servers
 -------
 
