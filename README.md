@@ -89,12 +89,12 @@ Methods:
 
 Full example:
 
-    var zerorpc = require("zerorpc/server");
+    var zerorpc = require("zerorpc/client");
 
     var client = new client.Client();
     client.connect("tcp://127.0.0.1:4242");
 
-    server.on("error", function(error) {
+    client.on("error", function(error) {
         console.error("RPC client error:", error);
     });
 
