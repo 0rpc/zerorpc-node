@@ -27,8 +27,8 @@ Methods:
 * `connect(endpoint)` - Connects the server to the specified ZeroMQ endpoint.
 * `close()` - Closes the ZeroMQ socket.
 * `expose(context, options)` - Exposes a new zeroservice.
-  * context is an object with the exposed functions. Only functions that do not have a leading underscore will be exposed. Each exposed method must take in a callback as a first argument. This callback is called as `callback(error, response, more)` when there is a new update, where error is an error object or string, response is the new update, and more is a boolean specifying whether new updates will be available later.
-  * options are the same as those taken in the constructor. If any options are specified, they will override the server-wide options for this zeroservice.
+  * `context` is an object with the exposed functions. Only functions that do not have a leading underscore will be exposed. Each exposed method must take in a callback as a first argument. This callback is called as `callback(error, response, more)` when there is a new update, where error is an error object or string, response is the new update, and more is a boolean specifying whether new updates will be available later.
+  * `options` are the same as those taken in the constructor. If any options are specified, they will override the server-wide options for this zeroservice.
 
 Full example:
 
@@ -82,8 +82,8 @@ Methods:
 * `connect(endpoint)` - Connects the server to the specified ZeroMQ endpoint.
 * `close()` - Closes the ZeroMQ socket.
 * `invoke(method, arguments, [options, callback])` - Invokes a remote method.
-  * method is the method name.
-  * arguments is an array of the method arguments.
-  * options are the same as those taken in the constructor. If any options are specified, they will override the client-wide options for this request.
-  * callback is a method to call when there is an update. This callback is called as `callback(error, response, more)` when there is a new update, where error is an error object, response is the new update, and more is a boolean specifying whether new updates will be available later.
+  * `method` is the method name.
+  * `arguments` is an array of the method arguments.
+  * `options` are the same as those taken in the constructor. If any options are specified, they will override the client-wide options for this request.
+  * `callback` is a method to call when there is an update. This callback is called as `callback(error, response, more)` when there is a new update, where error is an error object, response is the new update, and more is a boolean specifying whether new updates will be available later.
 
