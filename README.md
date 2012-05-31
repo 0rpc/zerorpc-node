@@ -87,3 +87,25 @@ Methods:
   * `options` are the same as those taken in the constructor. If any options are specified, they will override the client-wide options for this request.
   * `callback` is a method to call when there is an update. This callback is called as `callback(error, response, more)` when there is a new update, where error is an error object, response is the new update, and more is a boolean specifying whether new updates will be available later.
 
+Full example:
+
+    var zerorpc = require("zerorpc/server");
+
+    var client = new client.Client();
+    client.connect("tcp://127.0.0.1:4242");
+
+    server.on("error", function(error) {
+        console.error("RPC client error:", error);
+    });
+
+    client.invoke("iter", [10, 20, 2], function(error, res, more) {
+        if(error) {
+            console.error(error);
+        } else {
+            console.log("UPDATE:", res);
+        }
+
+        if(done) {
+            console.log("Done.");
+        }
+    });
