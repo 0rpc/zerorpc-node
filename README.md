@@ -46,20 +46,20 @@ Full example:
     });
 
     server.expose({
-        addMan: function(cb, sentence) {
-            cb(null, sentence + ", man!");
+        addMan: function(sentence, reply) {
+            reply(null, sentence + ", man!", false);
         },
 
-        add42: function(cb, n) {
-            cb(null, n + 42);
+        add42: function(n, reply) {
+            reply(null, n + 42, false);
         },
 
-        iter: function(cb, from, to, step) {
+        iter: function(from, to, step, reply) {
             for(i=from; i<to; i+=step) {
-                cb(null, i, true);
+                reply(null, i, true);
             }
 
-            cb(null, undefined, false);
+            reply(null, undefined, false);
         }
     });
 
