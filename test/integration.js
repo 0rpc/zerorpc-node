@@ -23,10 +23,7 @@
 
 var zerorpc = require("..");
 
-var rpcServer = new zerorpc.Server();
-rpcServer.bind("tcp://0.0.0.0:4242");
-
-rpcServer.expose({
+var rpcServer = new zerorpc.Server({
     addMan: function(sentence, reply) {
         reply(null, sentence + ", man!", false);
     },
@@ -73,6 +70,8 @@ rpcServer.expose({
         }, 31 * 1000);
     }
 });
+
+rpcServer.bind("tcp://0.0.0.0:4242");
 
 var rpcClient = new zerorpc.Client();
 rpcClient.connect("tcp://localhost:4242");
