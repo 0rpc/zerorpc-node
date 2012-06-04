@@ -27,37 +27,37 @@ var rpcServer = new zerorpc.Server();
 rpcServer.bind("tcp://0.0.0.0:4242");
 
 rpcServer.expose({
-    addMan: function(cb, sentence) {
-        cb(null, sentence + ", man!");
+    addMan: function(sentence, reply) {
+        reply(null, sentence + ", man!", false);
     },
 
-    add42: function(cb, n) {
-        cb(null, n + 42);
+    add42: function(n, reply) {
+        reply(null, n + 42, false);
     },
 
-    iter: function(cb, from, to, step) {
+    iter: function(from, to, step, reply) {
         for(i=from; i<to; i+=step) {
-            cb(null, i, true);
+            reply(null, i, true);
         }
 
-        cb(null, undefined, false);
+        reply(null, undefined, false);
     },
 
-    simpleError: function(cb) {
-        cb("This is an error, man!", undefined, false);
+    simpleError: function(reply) {
+        reply("This is an error, man!", undefined, false);
     },
 
-    objectError: function(cb) {
-        cb(new Error("This is an error object, man!"), undefined, false);
+    objectError: function(reply) {
+        reply(new Error("This is an error object, man!"), undefined, false);
     },
 
-    streamError: function(cb) {
-        cb("This is a stream error, man!", undefined, true);
+    streamError: function(reply) {
+        reply("This is a stream error, man!", undefined, true);
 
         var error = false;
         
         try {
-            cb(null, "Should not happen", false);
+            reply(null, "Should not happen", false);
         } catch(e) {
             error = true;
         }
@@ -67,9 +67,9 @@ rpcServer.expose({
         }
     },
 
-    quiet: function(cb) {
+    quiet: function(reply) {
         setTimeout(function() {
-            cb(null, "Should not happen", false);
+            reply(null, "Should not happen", false);
         }, 31 * 1000);
     }
 });
