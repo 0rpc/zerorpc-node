@@ -15,11 +15,9 @@ Servers
 To create a new server:
 
     var zerorpc = require("zerorpc");
-    var server = new zerorpc.Server();
+    var server = new zerorpc.Server(context);
 
-The constructor optionally takes in an options object. Allowable options:
-
-* `heartbeat` (number) - Sets the heartbeat rate in seconds. Defaults to 5.
+The constructor takes in a context object with the functions to expose over RPC. Only functions that do not have a leading underscore will be exposed. Each exposed method must take in a callback as the last argument. This callback is called as `callback(error, response, more)` when there is a new update, where error is an error object or string, response is the new update, and more is a boolean specifying whether new updates will be available later.
 
 Events:
 
@@ -30,22 +28,12 @@ Methods:
 * `bind(endpoint)` - Binds the server to the specified ZeroMQ endpoint.
 * `connect(endpoint)` - Connects the server to the specified ZeroMQ endpoint.
 * `close()` - Closes the ZeroMQ socket.
-* `expose(context, options)` - Exposes a new zeroservice.
-  * `context` is an object with the exposed functions. Only functions that do not have a leading underscore will be exposed. Each exposed method must take in a callback as a first argument. This callback is called as `callback(error, response, more)` when there is a new update, where error is an error object or string, response is the new update, and more is a boolean specifying whether new updates will be available later.
-  * `options` are the same as those taken in the constructor. If any options are specified, they will override the server-wide options for this zeroservice.
 
 Full example:
 
     var zerorpc = require("zerorpc");
 
-    var server = new zerorpc.Server();
-    server.bind("tcp://0.0.0.0:4242");
-
-    server.on("error", function(error) {
-        console.error("RPC server error:", error);
-    });
-
-    server.expose({
+    var server = new zerorpc.Server({
         addMan: function(sentence, reply) {
             reply(null, sentence + ", man!", false);
         },
@@ -63,17 +51,22 @@ Full example:
         }
     });
 
+    server.bind("tcp://0.0.0.0:4242");
+
+    server.on("error", function(error) {
+        console.error("RPC server error:", error);
+    });
+
 Clients
 -------
 
 To create a new client:
 
     var zerorpc = require("zerorpc");
-    var client = new zerorpc.Client();
+    var client = new zerorpc.Client(options);
 
 The constructor optionally takes in an options object. Allowable options:
 
-* `heartbeat` (number) - Sets the heartbeat rate in seconds. Defaults to 5.
 * `timeout` (number) - Sets the number of seconds to wait for a response before considering the call timed out. Defaults to 30.
 
 Events:
@@ -85,10 +78,8 @@ Methods:
 * `bind(endpoint)` - Binds the server to the specified ZeroMQ endpoint.
 * `connect(endpoint)` - Connects the server to the specified ZeroMQ endpoint.
 * `close()` - Closes the ZeroMQ socket.
-* `invoke(method, arguments, [options, callback])` - Invokes a remote method.
+* `invoke(method, arguments..., callback)` - Invokes a remote method.
   * `method` is the method name.
-  * `arguments` is an array of the method arguments.
-  * `options` are the same as those taken in the constructor. If any options are specified, they will override the client-wide options for this request.
   * `callback` is a method to call when there is an update. This callback is called as `callback(error, response, more)` when there is a new update, where error is an error object, response is the new update, and more is a boolean specifying whether new updates will be available later.
 
 Full example:
@@ -102,7 +93,7 @@ Full example:
         console.error("RPC client error:", error);
     });
 
-    client.invoke("iter", [10, 20, 2], function(error, res, more) {
+    client.invoke("iter", 10, 20, 2, function(error, res, more) {
         if(error) {
             console.error(error);
         } else {
