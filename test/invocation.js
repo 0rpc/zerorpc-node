@@ -21,7 +21,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-var zerorpc = require("..");
+var zerorpc = require(".."),
+    _ = require("underscore");
 
 var rpcServer = new zerorpc.Server({
     addMan: function(sentence, reply) {
@@ -68,6 +69,11 @@ var rpcServer = new zerorpc.Server({
         setTimeout(function() {
             reply(null, "Should not happen", false);
         }, 31 * 1000);
+    },
+
+    replyPartial: function(reply) {
+        reply(1, true);
+        reply(2);
     }
 });
 
@@ -90,7 +96,7 @@ attachError(rpcServer, rpcClient);
 exports.testNormalStringMethod = function(test) {
     test.expect(3);
 
-    rpcClient.invoke("addMan", ["This is not an error"], function(error, res, more) {
+    rpcClient.invoke("addMan", "This is not an error", function(error, res, more) {
         test.ifError(error);
         test.deepEqual(res, "This is not an error, man!");
         test.equal(more, false);
@@ -101,7 +107,7 @@ exports.testNormalStringMethod = function(test) {
 exports.testNormalIntMethod = function(test) {
     test.expect(3);
 
-    rpcClient.invoke("add42", [30], function(error, res, more) {
+    rpcClient.invoke("add42", 30, function(error, res, more) {
         test.ifError(error);
         test.deepEqual(res, 72);
         test.equal(more, false);
@@ -113,7 +119,7 @@ exports.testStreamMethod = function(test) {
     test.expect(18);
     var nextExpected = 10;
 
-    rpcClient.invoke("iter", [10, 20, 2], function(error, res, more) {
+    rpcClient.invoke("iter", 10, 20, 2, function(error, res, more) {
         test.ifError(error);
 
         if(nextExpected == 20) {
@@ -131,7 +137,7 @@ exports.testStreamMethod = function(test) {
 exports.testSimpleError = function(test) {
     test.expect(3);
 
-    rpcClient.invoke("simpleError", [], function(error, res, more) {
+    rpcClient.invoke("simpleError", function(error, res, more) {
         test.equal(error.message, "This is an error, man!");
         test.equal(res, null);
         test.equal(more, false);
@@ -142,7 +148,7 @@ exports.testSimpleError = function(test) {
 exports.testObjectError = function(test) {
     test.expect(3);
 
-    rpcClient.invoke("objectError", [], function(error, res, more) {
+    rpcClient.invoke("objectError", function(error, res, more) {
         test.equal(error.message, "This is an error object, man!");
         test.equal(res, null);
         test.equal(more, false);
@@ -153,7 +159,7 @@ exports.testObjectError = function(test) {
 exports.testStreamError = function(test) {
     test.expect(3);
 
-    rpcClient.invoke("streamError", [], function(error, res, more) {
+    rpcClient.invoke("streamError", function(error, res, more) {
         test.equal(error.message, "This is a stream error, man!");
         test.equal(res, null);
         test.equal(more, false);
@@ -169,7 +175,7 @@ exports.testClose = function(test) {
 
     var hit = false;
 
-    closingClient.invoke("iter", [30, 40, 1], function(error, res, more) {
+    closingClient.invoke("iter", 30, 40, 1, function(error, res, more) {
         if(hit) {
             throw new Error("iter() should not have been called more than once");
         } else {
@@ -181,10 +187,54 @@ exports.testClose = function(test) {
     });
 };
 
+exports.testPartialReply = function(test) {
+    test.expect(9);
+    var nextExpected = 1;
+
+    rpcClient.invoke("replyPartial", function(error, res, more) {
+        test.ifError(error);
+
+        if(nextExpected == 3) {
+            test.equal(res, undefined);
+            test.equal(more, false);
+            test.done();
+        } else {
+            test.equal(res, nextExpected);
+            test.equal(more, true);
+            nextExpected++;
+        }
+    });
+};
+
+exports.testIntrospector = function(test) {
+    test.expect(19);
+
+    rpcClient.invoke("_zpc_inspect", function(error, res, more) {
+        test.ifError(error);
+
+        test.equal(_.keys(res).length, 8);
+
+        for(var key in res) {
+            test.equal(res[key].doc, "");
+        }
+
+        test.deepEqual(res.add42.args, ["n"]);
+        test.deepEqual(res.addMan.args, ["sentence"]);
+        test.deepEqual(res.iter.args, ["from", "to", "step"]);
+        test.deepEqual(res.objectError.args, []);
+        test.deepEqual(res.quiet.args, []);
+        test.deepEqual(res.simpleError.args, []);
+        test.deepEqual(res.streamError.args, []);
+        test.deepEqual(res.replyPartial.args, []);
+        test.equal(more, false);
+        test.done();
+    });
+};
+
 exports.testNonExistentMethod = function(test) {
     test.expect(3);
 
-    rpcClient.invoke("non_existent", [], function(error, res, more) {
+    rpcClient.invoke("non_existent", function(error, res, more) {
         test.ok(error);
         test.equal(res, null);
         test.equal(more, false);
@@ -195,7 +245,7 @@ exports.testNonExistentMethod = function(test) {
 exports.testQuiet = function(test) {
     test.expect(3);
 
-    rpcClient.invoke("quiet", [], function(error, res, more) {
+    rpcClient.invoke("quiet", function(error, res, more) {
         test.equal(error.name, "TimeoutExpired");
         test.equal(res, null);
         test.equal(more, false);
@@ -206,7 +256,7 @@ exports.testQuiet = function(test) {
 exports.testBadClient = function(test) {
     test.expect(3);
 
-    badRpcClient.invoke("add42", [30], function(error, res, more) {
+    badRpcClient.invoke("add42", 30, function(error, res, more) {
         test.ok(error);
         test.equal(res, null);
         test.equal(more, false);
