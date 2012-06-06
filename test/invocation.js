@@ -34,11 +34,25 @@ var rpcServer = new zerorpc.Server({
     },
 
     iter: function(from, to, step, reply) {
-        for(i=from; i<to; i+=step) {
-            reply(null, i, true);
+        for(var i=from; i<to; i+=step) {
+            reply(i, true);
         }
 
-        reply(null, undefined, false);
+        reply(undefined, false);
+    },
+
+    lazyIter: function(from, to, step, reply) {
+        var counter = from;
+
+        var interval = setInterval(function() {
+            if(counter < to) {
+                reply(counter, true);
+                counter += step;
+            } else {
+                reply(null, false);
+                clearTimeout(interval);
+            }
+        }, 10);
     },
 
     simpleError: function(reply) {
@@ -50,12 +64,12 @@ var rpcServer = new zerorpc.Server({
     },
 
     streamError: function(reply) {
-        reply("This is a stream error, man!", undefined, true);
+        reply("This is a stream error, man!", undefined, false);
 
         var error = false;
-        
+    
         try {
-            reply(null, "Should not happen", false);
+            reply(null, "Should not happen");
         } catch(e) {
             error = true;
         }
@@ -175,9 +189,9 @@ exports.testClose = function(test) {
 
     var hit = false;
 
-    closingClient.invoke("iter", 30, 40, 1, function(error, res, more) {
+    closingClient.invoke("lazyIter", 30, 40, 1, function(error, res, more) {
         if(hit) {
-            throw new Error("iter() should not have been called more than once");
+            test.ok(false, "lazyIter() should not have been called more than once");
         } else {
             hit = true;
             test.ifError(error);
@@ -207,25 +221,19 @@ exports.testPartialReply = function(test) {
 };
 
 exports.testIntrospector = function(test) {
-    test.expect(19);
+    test.expect(14);
 
     rpcClient.invoke("_zpc_inspect", function(error, res, more) {
         test.ifError(error);
 
-        test.equal(_.keys(res).length, 8);
+        test.equal(_.keys(res).length, 9);
 
         for(var key in res) {
             test.equal(res[key].doc, "");
         }
 
-        test.deepEqual(res.add42.args, ["n"]);
-        test.deepEqual(res.addMan.args, ["sentence"]);
         test.deepEqual(res.iter.args, ["from", "to", "step"]);
         test.deepEqual(res.objectError.args, []);
-        test.deepEqual(res.quiet.args, []);
-        test.deepEqual(res.simpleError.args, []);
-        test.deepEqual(res.streamError.args, []);
-        test.deepEqual(res.replyPartial.args, []);
         test.equal(more, false);
         test.done();
     });
@@ -263,3 +271,10 @@ exports.testBadClient = function(test) {
         test.done();
     });
 };
+
+//TODO
+/*exports.testIncorrectArgumentCount = function(test) {
+    test.expect(3);
+
+    rpcClient.invoke("addMan", )
+};*/
