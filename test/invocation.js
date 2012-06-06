@@ -221,7 +221,7 @@ exports.testPartialReply = function(test) {
 };
 
 exports.testIntrospector = function(test) {
-    test.expect(14);
+    test.expect(15);
 
     rpcClient.invoke("_zpc_inspect", function(error, res, more) {
         test.ifError(error);
@@ -232,8 +232,9 @@ exports.testIntrospector = function(test) {
             test.equal(res[key].doc, "");
         }
 
-        test.deepEqual(res.iter.args, ["from", "to", "step"]);
         test.deepEqual(res.objectError.args, []);
+        test.deepEqual(res.add42.args.length, 1);
+        test.deepEqual(res.add42.args[0].name, "n");
         test.equal(more, false);
         test.done();
     });
