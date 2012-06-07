@@ -1,7 +1,7 @@
 zerorpc-node
 ============
 
-This is a port of [ZeroRPC](https://github.com/dotcloud/zerorpc-python) to node.js. We have full client and server support for version 2 of the protocol, however there are issues with legacy support.
+This is a port of [ZeroRPC](https://github.com/dotcloud/zerorpc-python) to node.js. We have full client and server support for version 3 of the protocol, however there are issues with legacy support.
 
 This project is alpha.
 
