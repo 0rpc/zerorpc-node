@@ -35,19 +35,19 @@ Full example:
 
     var server = new zerorpc.Server({
         addMan: function(sentence, reply) {
-            reply(null, sentence + ", man!", false);
+            reply(sentence + ", man!");
         },
 
         add42: function(n, reply) {
-            reply(null, n + 42, false);
+            reply(n + 42);
         },
 
         iter: function(from, to, step, reply) {
             for(i=from; i<to; i+=step) {
-                reply(null, i, true);
+                reply(i, true);
             }
 
-            reply(null, undefined, false);
+            reply();
         }
     });
 
