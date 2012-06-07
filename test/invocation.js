@@ -240,6 +240,17 @@ exports.testIntrospector = function(test) {
     });
 };
 
+exports.testIncorrectArgumentCount = function(test) {
+    test.expect(3);
+
+    rpcClient.invoke("addMan", function(error, res, more) {
+        test.ok(error);
+        test.equal(res, null);
+        test.equal(more, false);
+        test.done();
+    });
+};
+
 exports.testNonExistentMethod = function(test) {
     test.expect(3);
 
@@ -272,10 +283,3 @@ exports.testBadClient = function(test) {
         test.done();
     });
 };
-
-//TODO
-/*exports.testIncorrectArgumentCount = function(test) {
-    test.expect(3);
-
-    rpcClient.invoke("addMan", )
-};*/
