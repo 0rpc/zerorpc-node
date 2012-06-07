@@ -80,7 +80,7 @@ Methods:
 * `close()` - Closes the ZeroMQ socket.
 * `invoke(method, arguments..., callback)` - Invokes a remote method.
   * `method` is the method name.
-  * `callback` is a method to call when there is an update. This callback is called as `callback(error, response, more)` when there is a new update, where error is an error object, response is the new update, and more is a boolean specifying whether new updates will be available later.
+  * `callback` is a method to call when there is an update. This callback is called as `callback(error, response, more)` when there is a new update, where error is an error object, response is the new update, and more is a boolean specifying whether new updates will be available later. You can also do `callback()` to close a stream response, `callback(response)` to send a non-stream response without an error, or `callback(response, more)` for a response without an error.
 
 Full example:
 
