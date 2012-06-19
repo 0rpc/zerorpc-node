@@ -7,7 +7,7 @@ To install the package:
 
     npm install zerorpc
 
-If you get the error `Package libzmq was not found`, take a look at [the fix for zeromq.node](https://github.com/JustinTulloss/zeromq.node/issues/55).
+If you get the error `Package libzmq was not found`, take a look at [the fix for zeromq.node](https://github.com/JustinTulloss/zeromq.node/issues/55). If you get the error `Unable to load shared library <<path to zeromq.node>>/binding.node`, [make sure you run ldconfig](https://github.com/JustinTulloss/zeromq.node/issues/85). If that still doesn't work, check out [this ticket](https://github.com/JustinTulloss/zeromq.node/issues/92).
 
 Servers
 -------
