@@ -75,8 +75,8 @@ Events:
 
 Methods:
 
-* `bind(endpoint)` - Binds the server to the specified ZeroMQ endpoint.
-* `connect(endpoint)` - Connects the server to the specified ZeroMQ endpoint.
+* `bind(endpoint)` - Binds the client to the specified ZeroMQ endpoint.
+* `connect(endpoint)` - Connects the client to the specified ZeroMQ endpoint.
 * `close()` - Closes the ZeroMQ socket.
 * `invoke(method, arguments..., callback)` - Invokes a remote method.
   * `method` is the method name.
