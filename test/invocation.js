@@ -241,10 +241,11 @@ exports.testIntrospector = function(test) {
 };
 
 exports.testIncorrectArgumentCount = function(test) {
-    test.expect(3);
+    test.expect(4);
 
-    rpcClient.invoke("addMan", function(error, res, more) {
+    rpcClient.invoke("lazyIter", function(error, res, more) {
         test.ok(error);
+        test.equal(error.message, "Invalid number of arguments");
         test.equal(res, null);
         test.equal(more, false);
         test.done();
