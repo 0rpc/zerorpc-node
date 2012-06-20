@@ -17,7 +17,7 @@ To create a new server:
     var zerorpc = require("zerorpc");
     var server = new zerorpc.Server(context);
 
-The constructor takes in a context object with the functions to expose over RPC. Only functions that do not have a leading underscore will be exposed. Each exposed method must take in a callback as the last argument. This callback is called as `callback(error, response, more)` when there is a new update, where error is an error object or string, response is the new update, and more is a boolean specifying whether new updates will be available later.
+The constructor takes in a context object with the functions to expose over RPC. Only functions that do not have a leading underscore will be exposed. Each exposed method must take in a callback as the last argument. This callback is called as `callback(error, response, more)` when there is a new update, where error is an error object or string, response is the new update, and more is a boolean specifying whether new updates will be available later. You can also do `callback()` to close a stream response, `callback(response)` to send a non-stream response without an error, or `callback(response, more)` for a response without an error.
 
 Events:
 
@@ -80,7 +80,7 @@ Methods:
 * `close()` - Closes the ZeroMQ socket.
 * `invoke(method, arguments..., callback)` - Invokes a remote method.
   * `method` is the method name.
-  * `callback` is a method to call when there is an update. This callback is called as `callback(error, response, more)` when there is a new update, where error is an error object, response is the new update, and more is a boolean specifying whether new updates will be available later. You can also do `callback()` to close a stream response, `callback(response)` to send a non-stream response without an error, or `callback(response, more)` for a response without an error.
+  * `callback` is a method to call when there is an update. This callback is called as `callback(error, response, more)`, where error is an error object, response is the new update, and more is a boolean specifying whether new updates will be available later (i.e. whether the response is streaming).
 
 Full example:
 
