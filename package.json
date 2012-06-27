@@ -1,6 +1,6 @@
 {
     "name": "zerorpc",
-    "version": "0.7.4",
+    "version": "0.8.0",
     "main": "./index.js",
     "author": "dotCloud <opensource@dotcloud.com>",
     "description": "A port of ZeroRPC to node.js",
