@@ -221,20 +221,21 @@ exports.testPartialReply = function(test) {
 };
 
 exports.testIntrospector = function(test) {
-    test.expect(15);
+    test.expect(16);
 
-    rpcClient.invoke("_zpc_inspect", function(error, res, more) {
+    rpcClient.invoke("_zerorpc_inspect", function(error, res, more) {
         test.ifError(error);
 
-        test.equal(_.keys(res).length, 9);
+        test.equal(typeof(res.name), "string");
+        test.equal(_.keys(res.methods).length, 9);
 
-        for(var key in res) {
-            test.equal(res[key].doc, "");
+        for(var key in res.methods) {
+            test.equal(res.methods[key].doc, "");
         }
 
-        test.deepEqual(res.objectError.args, []);
-        test.deepEqual(res.add42.args.length, 1);
-        test.deepEqual(res.add42.args[0].name, "n");
+        test.deepEqual(res.methods.objectError.args, []);
+        test.deepEqual(res.methods.add42.args.length, 1);
+        test.deepEqual(res.methods.add42.args[0].name, "n");
         test.equal(more, false);
         test.done();
     });
