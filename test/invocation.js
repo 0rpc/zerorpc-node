@@ -49,10 +49,10 @@ var rpcServer = new zerorpc.Server({
                 reply(counter, true);
                 counter += step;
             } else {
-                reply(null, false);
+                reply(undefined, false);
                 clearTimeout(interval);
             }
-        }, 10);
+        }, 3000);
     },
 
     simpleError: function(reply) {
@@ -197,6 +197,25 @@ exports.testClose = function(test) {
             test.ifError(error);
             closingClient.close();
             test.done();
+        }
+    });
+};
+
+exports.testSlowStream = function(test) {
+    test.expect(18);
+    var nextExpected = 10;
+
+    rpcClient.invoke("lazyIter", 10, 20, 2, function(error, res, more) {
+        test.ifError(error);
+
+        if(nextExpected == 20) {
+            test.equal(res, null);
+            test.equal(more, false);
+            test.done();
+        } else {
+            test.equal(res, nextExpected);
+            test.equal(more, true);
+            nextExpected += 2;
         }
     });
 };
