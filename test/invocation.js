@@ -93,7 +93,7 @@ var rpcServer = new zerorpc.Server({
 
 rpcServer.bind("tcp://0.0.0.0:4242");
 
-var rpcClient = new zerorpc.Client();
+var rpcClient = new zerorpc.Client({ timeout: 5 });
 rpcClient.connect("tcp://localhost:4242");
 
 var badRpcClient = new zerorpc.Client();
