@@ -124,21 +124,21 @@ exports.testNormalIntMethod = function(test) {
     });
 };
 
-exports.testStreamMethod = function(test) {
-    test.expect(18);
-    var nextExpected = 10;
+exports.testStreamingMethodWithBufferResets = function(test) {
+    test.expect(3000);
+    var nextExpected = 1;
 
-    rpcClient.invoke("iter", 10, 20, 2, function(error, res, more) {
+    rpcClient.invoke("iter", 1, 1000, 1, function(error, res, more) {
         test.ifError(error);
 
-        if(nextExpected == 20) {
+        if(nextExpected == 1000) {
             test.equal(res, undefined);
             test.equal(more, false);
             test.done();
         } else {
             test.equal(res, nextExpected);
             test.equal(more, true);
-            nextExpected += 2;
+            nextExpected += 1;
         }
     });
 };
