@@ -35,10 +35,10 @@ var rpcServer = new zerorpc.Server({
 
     iter: function(from, to, step, reply) {
         for(var i=from; i<to; i+=step) {
-            reply(i, true);
+            reply(null, i, true);
         }
 
-        reply(undefined, false);
+        reply();
     },
 
     lazyIter: function(from, to, step, reply) {
@@ -46,10 +46,10 @@ var rpcServer = new zerorpc.Server({
 
         var interval = setInterval(function() {
             if(counter < to) {
-                reply(counter, true);
+                reply(null, counter, true);
                 counter += step;
             } else {
-                reply(undefined, false);
+                reply();
                 clearTimeout(interval);
             }
         }, 3000);
@@ -83,11 +83,6 @@ var rpcServer = new zerorpc.Server({
         setTimeout(function() {
             reply(null, "Should not happen", false);
         }, 31 * 1000);
-    },
-
-    replyPartial: function(reply) {
-        reply(1, true);
-        reply(2);
     }
 });
 
@@ -220,33 +215,14 @@ exports.testSlowStream = function(test) {
     });
 };
 
-exports.testPartialReply = function(test) {
-    test.expect(9);
-    var nextExpected = 1;
-
-    rpcClient.invoke("replyPartial", function(error, res, more) {
-        test.ifError(error);
-
-        if(nextExpected == 3) {
-            test.equal(res, undefined);
-            test.equal(more, false);
-            test.done();
-        } else {
-            test.equal(res, nextExpected);
-            test.equal(more, true);
-            nextExpected++;
-        }
-    });
-};
-
 exports.testIntrospector = function(test) {
-    test.expect(16);
+    test.expect(15);
 
     rpcClient.invoke("_zerorpc_inspect", function(error, res, more) {
         test.ifError(error);
 
         test.equal(typeof(res.name), "string");
-        test.equal(_.keys(res.methods).length, 9);
+        test.equal(_.keys(res.methods).length, 8);
 
         for(var key in res.methods) {
             test.equal(res.methods[key].doc, "");
