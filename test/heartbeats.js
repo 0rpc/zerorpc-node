@@ -65,7 +65,7 @@ exports.testClose = function(test) {
 
             setTimeout(function() {
                 if(!killed) {
-                    ok(false, "Connection not closed on the remote end");
+                    test.ok(false, "Connection not closed on the remote end");
                 }
 
                 test.done();
