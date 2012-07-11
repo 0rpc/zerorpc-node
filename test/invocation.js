@@ -31,76 +31,13 @@ var rpcServer = new zerorpc.Server({
 
     add42: function(n, reply) {
         reply(null, n + 42, false);
-    },
-
-    iter: function(from, to, step, reply) {
-        for(var i=from; i<to; i+=step) {
-            reply(null, i, true);
-        }
-
-        reply();
-    },
-
-    lazyIter: function(from, to, step, reply) {
-        var counter = from;
-
-        var interval = setInterval(function() {
-            if(counter < to) {
-                reply(null, counter, true);
-                counter += step;
-            } else {
-                reply();
-                clearTimeout(interval);
-            }
-        }, 3000);
-    },
-
-    simpleError: function(reply) {
-        reply("This is an error, man!", undefined, false);
-    },
-
-    objectError: function(reply) {
-        reply(new Error("This is an error object, man!"), undefined, false);
-    },
-
-    streamError: function(reply) {
-        reply("This is a stream error, man!", undefined, false);
-
-        var error = false;
-    
-        try {
-            reply(null, "Should not happen");
-        } catch(e) {
-            error = true;
-        }
-
-        if(!error) {
-            throw new Error("An error should have been thrown");
-        }
-    },
-
-    quiet: function(reply) {
-        setTimeout(function() {
-            reply(null, "Should not happen", false);
-        }, 31 * 1000);
     }
 });
 
-rpcServer.bind("tcp://0.0.0.0:4242");
+rpcServer.bind("tcp://0.0.0.0:4245");
 
 var rpcClient = new zerorpc.Client({ timeout: 5 });
-rpcClient.connect("tcp://localhost:4242");
-
-var badRpcClient = new zerorpc.Client();
-badRpcClient.connect("tcp://localhost:4040");
-
-function attachError(emitter) {
-    emitter.on("error", function(error) {
-        throw new Error(error);
-    })
-}
-
-attachError(rpcServer, rpcClient);
+rpcClient.connect("tcp://localhost:4245");
 
 exports.testNormalStringMethod = function(test) {
     test.expect(3);
@@ -124,111 +61,19 @@ exports.testNormalIntMethod = function(test) {
     });
 };
 
-exports.testStreamingMethodWithBufferResets = function(test) {
-    test.expect(3000);
-    var nextExpected = 1;
-
-    rpcClient.invoke("iter", 1, 1000, 1, function(error, res, more) {
-        test.ifError(error);
-
-        if(nextExpected == 1000) {
-            test.equal(res, undefined);
-            test.equal(more, false);
-            test.done();
-        } else {
-            test.equal(res, nextExpected);
-            test.equal(more, true);
-            nextExpected += 1;
-        }
-    });
-};
-
-exports.testSimpleError = function(test) {
-    test.expect(3);
-
-    rpcClient.invoke("simpleError", function(error, res, more) {
-        test.equal(error.message, "This is an error, man!");
-        test.equal(res, null);
-        test.equal(more, false);
-        test.done();
-    });
-};
-
-exports.testObjectError = function(test) {
-    test.expect(3);
-
-    rpcClient.invoke("objectError", function(error, res, more) {
-        test.equal(error.message, "This is an error object, man!");
-        test.equal(res, null);
-        test.equal(more, false);
-        test.done();
-    });
-};
-
-exports.testStreamError = function(test) {
-    test.expect(3);
-
-    rpcClient.invoke("streamError", function(error, res, more) {
-        test.equal(error.message, "This is a stream error, man!");
-        test.equal(res, null);
-        test.equal(more, false);
-        test.done();
-    });
-};
-
-exports.testClose = function(test) {
-    test.expect(1);
-
-    var closingClient = new zerorpc.Client();
-    closingClient.connect("tcp://localhost:4242");
-
-    var hit = false;
-
-    closingClient.invoke("lazyIter", 30, 40, 1, function(error, res, more) {
-        if(hit) {
-            test.ok(false, "lazyIter() should not have been called more than once");
-        } else {
-            hit = true;
-            test.ifError(error);
-            closingClient.close();
-            test.done();
-        }
-    });
-};
-
-exports.testSlowStream = function(test) {
-    test.expect(18);
-    var nextExpected = 10;
-
-    rpcClient.invoke("lazyIter", 10, 20, 2, function(error, res, more) {
-        test.ifError(error);
-
-        if(nextExpected == 20) {
-            test.equal(res, null);
-            test.equal(more, false);
-            test.done();
-        } else {
-            test.equal(res, nextExpected);
-            test.equal(more, true);
-            nextExpected += 2;
-        }
-    });
-};
-
 exports.testIntrospector = function(test) {
-    test.expect(15);
+    test.expect(8);
 
     rpcClient.invoke("_zerorpc_inspect", function(error, res, more) {
         test.ifError(error);
 
         test.equal(typeof(res.name), "string");
-        test.equal(_.keys(res.methods).length, 8);
+        test.equal(_.keys(res.methods).length, 2);
 
         for(var key in res.methods) {
             test.equal(res.methods[key].doc, "");
         }
 
-        test.deepEqual(res.methods.objectError.args, []);
         test.deepEqual(res.methods.add42.args.length, 1);
         test.deepEqual(res.methods.add42.args[0].name, "n");
         test.equal(more, false);
@@ -239,7 +84,7 @@ exports.testIntrospector = function(test) {
 exports.testIncorrectArgumentCount = function(test) {
     test.expect(4);
 
-    rpcClient.invoke("lazyIter", function(error, res, more) {
+    rpcClient.invoke("addMan", function(error, res, more) {
         test.ok(error);
         test.equal(error.message, "Invalid number of arguments");
         test.equal(res, null);
@@ -259,19 +104,11 @@ exports.testNonExistentMethod = function(test) {
     });
 };
 
-exports.testQuiet = function(test) {
-    test.expect(3);
-
-    rpcClient.invoke("quiet", function(error, res, more) {
-        test.equal(error.name, "TimeoutExpired");
-        test.equal(res, null);
-        test.equal(more, false);
-        test.done();
-    });
-};
-
 exports.testBadClient = function(test) {
     test.expect(3);
+
+    var badRpcClient = new zerorpc.Client();
+    badRpcClient.connect("tcp://localhost:4040");
 
     badRpcClient.invoke("add42", 30, function(error, res, more) {
         test.ok(error);
