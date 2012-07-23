@@ -45,8 +45,7 @@ rpcServer.bind("tcp://0.0.0.0:4246");
 var rpcClient = new zerorpc.Client({ timeout: 5 });
 rpcClient.connect("tcp://localhost:4246");
 
-exports.testSlowStream = function(test) {
-    test.expect(18);
+function lazyIterRunner(test, callback) {
     var nextExpected = 10;
 
     rpcClient.invoke("lazyIter", 10, 20, 2, function(error, res, more) {
@@ -55,11 +54,24 @@ exports.testSlowStream = function(test) {
         if(nextExpected == 20) {
             test.equal(res, null);
             test.equal(more, false);
-            test.done();
+            callback();
         } else {
             test.equal(res, nextExpected);
             test.equal(more, true);
             nextExpected += 2;
         }
     });
+}
+
+exports.testConcurrentRequests = function(test) {
+    test.expect(90);
+
+    var results = 0;
+
+    for(var i=0; i<5; i++) {
+        lazyIterRunner(test, function() {
+            results++;
+            if(results === 5) test.done();
+        });
+    }
 };
