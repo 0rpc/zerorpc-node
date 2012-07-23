@@ -63,13 +63,20 @@ exports.testClose = function(test) {
             test.ifError(error);
             rpcClient.close();
 
-            setTimeout(function() {
-                if(!killed) {
-                    test.ok(false, "Connection not closed on the remote end");
+            //Repeatedly poll for a closed connection - if after 20 seconds
+            //(2 heartbeats) the connection isn't closed, throw an error
+            var numChecks = 0;
+            var checkTimeout = setInterval(function() {
+                if(killed) {
+                    clearTimeout(checkTimeout);
+                    test.done();
+                    return;
                 }
 
-                test.done();
-            }, 11000);
+                if(numChecks++ == 20) {
+                    test.ok(false, "Connection not closed on the remote end");
+                }
+            }, 1000);
         }
     });
 };
