@@ -35,16 +35,16 @@ Full example:
 
     var server = new zerorpc.Server({
         addMan: function(sentence, reply) {
-            reply(sentence + ", man!");
+            reply(null, sentence + ", man!");
         },
 
         add42: function(n, reply) {
-            reply(n + 42);
+            reply(null, n + 42);
         },
 
         iter: function(from, to, step, reply) {
             for(i=from; i<to; i+=step) {
-                reply(i, true);
+                reply(null, i, true);
             }
 
             reply();
