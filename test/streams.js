@@ -71,7 +71,10 @@ exports.testConcurrentRequests = function(test) {
     for(var i=0; i<5; i++) {
         lazyIterRunner(test, function() {
             results++;
-            if(results === 5) test.done();
+            if(results === 5) {
+                rpcServer.close();
+                test.done();
+            }
         });
     }
 };

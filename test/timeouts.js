@@ -27,15 +27,17 @@ var zerorpc = require(".."),
 var rpcServer = new zerorpc.Server({
     quiet: function(reply) {
         setTimeout(function() {
-            reply(null, "Should not happen", false);
+            try {
+                reply(null, "Should not happen", false);
+            } catch (e) { /* expected */ }
         }, 6 * 1000);
     }
 });
 
-rpcServer.bind("tcp://0.0.0.0:4247");
+rpcServer.bind("tcp://0.0.0.0:4248");
 
 var rpcClient = new zerorpc.Client({ timeout: 5 });
-rpcClient.connect("tcp://localhost:4247");
+rpcClient.connect("tcp://localhost:4248");
 
 exports.testQuiet = function(test) {
     test.expect(3);
@@ -44,6 +46,7 @@ exports.testQuiet = function(test) {
         test.equal(error.name, "TimeoutExpired");
         test.equal(res, null);
         test.equal(more, false);
+        rpcServer.close();
         test.done();
     });
 };

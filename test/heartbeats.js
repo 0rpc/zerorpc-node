@@ -69,6 +69,7 @@ exports.testClose = function(test) {
             var checkTimeout = setInterval(function() {
                 if(killed) {
                     clearTimeout(checkTimeout);
+                    rpcServer.close();
                     test.done();
                     return;
                 }

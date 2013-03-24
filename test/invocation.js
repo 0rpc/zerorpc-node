@@ -102,6 +102,7 @@ exports.testBadClient = function(test) {
         test.ok(error);
         test.equal(res, null);
         test.equal(more, false);
+        rpcServer.close();
         test.done();
     });
 };

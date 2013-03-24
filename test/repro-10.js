@@ -21,40 +21,29 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+/* This test reproduces issue 10 (server is garbage-collected if no client connection
+    happens before some time). This bug was happening with zmq<2.2.0. */
 var zerorpc = require(".."),
     _ = require("underscore");
 
 var rpcServer = new zerorpc.Server({
-    iter: function(from, to, step, reply) {
-        for(var i=from; i<to; i+=step) {
-            reply(null, i, true);
-        }
-
-        reply();
+    helloWorld: function(reply) {
+        reply(null, "Hello World!")
     }
 });
 
-rpcServer.bind("tcp://0.0.0.0:4242");
+rpcServer.bind("tcp://0.0.0.0:4247");
 
 var rpcClient = new zerorpc.Client({ timeout: 5 });
-rpcClient.connect("tcp://localhost:4242");
-
-exports.testStreamingMethodWithBufferResets = function(test) {
-    test.expect(3000);
-    var nextExpected = 1;
-
-    rpcClient.invoke("iter", 1, 1000, 1, function(error, res, more) {
-        test.ifError(error);
-
-        if(nextExpected == 1000) {
-            test.equal(res, undefined);
+exports.testRepro10 = function(test) {
+    setTimeout(function() {
+        rpcClient.connect("tcp://localhost:4247");
+        rpcClient.invoke("helloWorld", function(error, res, more) {
+            test.equal(error, null);
+            test.equal(res, "Hello World!");
             test.equal(more, false);
             rpcServer.close();
             test.done();
-        } else {
-            test.equal(res, nextExpected);
-            test.equal(more, true);
-            nextExpected += 1;
-        }
-    });
+        });
+    }, 10000);
 };

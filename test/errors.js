@@ -37,7 +37,7 @@ var rpcServer = new zerorpc.Server({
         reply("This is a stream error, man!", undefined, false);
 
         var error = false;
-    
+
         try {
             reply(null, "Should not happen");
         } catch(e) {
@@ -84,6 +84,7 @@ exports.testStreamError = function(test) {
         test.equal(error.message, "This is a stream error, man!");
         test.equal(res, null);
         test.equal(more, false);
+        rpcServer.close();
         test.done();
     });
 };
