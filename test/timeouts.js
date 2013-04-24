@@ -47,6 +47,7 @@ exports.testQuiet = function(test) {
         test.equal(res, null);
         test.equal(more, false);
         rpcServer.close();
+        rpcClient.close();
         test.done();
     });
 };
