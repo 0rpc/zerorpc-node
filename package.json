@@ -12,7 +12,9 @@
         "name": "Yusuf Simonson",
         "email": "yusuf@dotcloud.com"
     }],
-
+    "scripts": {
+      "test": "./node_modules/.bin/nodeunit test"
+    },
     "repository": {
         "type": "git",
         "url": "https://github.com/dotcloud/zerorpc-node"

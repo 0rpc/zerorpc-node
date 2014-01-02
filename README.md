@@ -15,9 +15,19 @@ Servers
 To create a new server:
 
     var zerorpc = require("zerorpc");
-    var server = new zerorpc.Server(context);
+    var server = new zerorpc.Server(context [, heartbeat]);
 
-The constructor takes in a context object with the functions to expose over RPC. Only functions that do not have a leading underscore will be exposed. Each exposed method must take in a callback as the last argument. This callback is called as `callback(error, response, more)` when there is a new update, where error is an error object or string, response is the new update, and more is a boolean specifying whether new updates will be available later. `error`, `response`, and `more` default to falsy values, so e.g. simply calling `callback()` closes an open stream, since `more` is false by default.
+The constructor takes in a context object with the functions to expose
+over RPC. Only functions that do not have a leading underscore will be
+exposed. Each exposed method must take in a callback as the last
+argument. This callback is called as `callback(error, response, more)`
+when there is a new update, where error is an error object or string,
+response is the new update, and more is a boolean specifying whether new
+updates will be available later. `error`, `response`, and `more` default
+to falsy values, so e.g. simply calling `callback()` closes an open
+stream, since `more` is false by default. Constructor also takes a
+heartbeat parameter that specifies the interval that the server should
+ping clinets to let them know it is active.
 
 Events:
 
@@ -68,6 +78,7 @@ To create a new client:
 The constructor optionally takes in an options object. Allowable options:
 
 * `timeout` (number) - Sets the number of seconds to wait for a response before considering the call timed out. Defaults to 30.
+* `heartbeatInterval` (number) - Sets the number of miliseconds to send send heartbeats to connected servers. Defaults to 5000ms.
 
 Events:
 
@@ -104,3 +115,5 @@ Full example:
             console.log("Done.");
         }
     });
+
+
