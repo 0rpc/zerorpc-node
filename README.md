@@ -1,7 +1,7 @@
 zerorpc-node
 ============
 
-ZeroRPC is a communication layer for distributed systems. zerorpc-node is a port of the original [ZeroRPC](https://github.com/dotcloud/zerorpc-python) for node.js. We have full client and server support for version 3 of the protocol, and clients/servers written in the Python version can communicate transparently with those written in node.js. This project is alpha.
+ZeroRPC is a communication layer for distributed systems. zerorpc-node is a port of the original [ZeroRPC](https://github.com/dotcloud/zerorpc-python) for node.js. We have full client and server support for version 3 of the protocol, and clients/servers written in the Python version can communicate transparently with those written in node.js. This project is in alpha.
 
 To install the package:
 
