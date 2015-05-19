@@ -10,7 +10,7 @@
         "email": "bombela@gmail.com"
     },{
         "name": "Yusuf Simonson",
-        "email": "yusuf@dotcloud.com"
+        "email": "simonson@gmail.com"
     }],
     "scripts": {
       "test": "./node_modules/.bin/nodeunit test"
