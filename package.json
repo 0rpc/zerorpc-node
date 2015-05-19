@@ -2,12 +2,12 @@
     "name": "zerorpc",
     "version": "0.9.4",
     "main": "./index.js",
-    "author": "dotCloud <opensource@dotcloud.com>",
+    "author": "François-Xavier Bourlet <bombela+zerorpc@gmail.com>",
     "description": "A port of ZeroRPC to node.js",
 
     "contributors": [{
         "name": "Francois-Xavier Bourlet",
-        "email": "fx@dotcloud.com"
+        "email": "bombela@gmail.com"
     },{
         "name": "Yusuf Simonson",
         "email": "yusuf@dotcloud.com"
@@ -17,7 +17,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/dotcloud/zerorpc-node"
+        "url": "https://github.com/0rpc/zerorpc-node"
     },
 
     "keywords": [
