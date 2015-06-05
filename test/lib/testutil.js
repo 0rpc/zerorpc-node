@@ -21,33 +21,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-/* This test reproduces issue 10 (server is garbage-collected if no client connection
-    happens before some time). This bug was happening with zmq<2.2.0. */
-var zerorpc = require(".."),
-    tutil = require("./lib/testutil");
+var path = require("path"),
+	temp = require("temp").track();
 
-module.exports = {
-	testRepro10: function(test) {
-		var endpoint = tutil.random_ipc_endpoint();
-		srv = new zerorpc.Server({
-			helloWorld: function(reply) {
-				reply(null, "Hello World!")
-			}
-		});
+var tmpdir = temp.mkdirSync("zerorpc-nodejs");
+var next_id = 0;
 
-		srv.bind(endpoint);
-		cli = new zerorpc.Client({ timeout: 5 });
-
-		setTimeout(function() {
-			cli.connect(endpoint);
-			cli.invoke("helloWorld", function(error, res, more) {
-				test.equal(error, null);
-				test.equal(res, "Hello World!");
-				test.equal(more, false);
-				cli.close();
-				srv.close();
-				test.done();
-			});
-		}, 10000);
-	}
-};
+exports.random_ipc_endpoint = function() {
+	return 'ipc://' + path.join(tmpdir, (next_id++).toString() + '.ipc');
+}

@@ -22,69 +22,80 @@
 // DEALINGS IN THE SOFTWARE.
 
 var zerorpc = require(".."),
-    _ = require("underscore");
+    util = require("util");
+    tutil = require("./lib/testutil");
 
-var rpcServer = new zerorpc.Server({
-    simpleError: function(reply) {
-        reply("This is an error, man!", undefined, false);
-    },
+module.exports = {
+	setUp: function(cb) {
+		var endpoint = tutil.random_ipc_endpoint();
+		this.srv = new zerorpc.Server({
+			simpleError: function(reply) {
+				reply("This is an error, man!", undefined, false);
+			},
 
-    objectError: function(reply) {
-        reply(new Error("This is an error object, man!"), undefined, false);
-    },
+			objectError: function(reply) {
+				reply(new Error("This is an error object, man!"), undefined,
+						false);
+			},
 
-    streamError: function(reply) {
-        reply("This is a stream error, man!", undefined, false);
+			streamError: function(reply) {
+				reply("This is a stream error, man!", undefined, false);
 
-        var error = false;
+				var error = false;
 
-        try {
-            reply(null, "Should not happen");
-        } catch(e) {
-            error = true;
-        }
+				try {
+					reply(null, "Should not happen");
+				} catch(e) {
+					error = true;
+				}
 
-        if(!error) {
-            throw new Error("An error should have been thrown");
-        }
-    }
-});
+				if(!error) {
+					throw new Error("An error should have been thrown");
+				}
+			}
+		});
 
-rpcServer.bind("tcp://0.0.0.0:4243");
+		this.srv.bind(endpoint);
+		this.cli = new zerorpc.Client({ timeout: 5 });
+		this.cli.connect(endpoint);
+		cb();
+	},
+	tearDown: function(cb) {
+		this.cli.close();
+		this.srv.close();
+		cb();
+	},
+	testSimpleError: function(test) {
+		test.expect(4);
 
-var rpcClient = new zerorpc.Client();
-rpcClient.connect("tcp://localhost:4243");
+		this.cli.invoke("simpleError", function(error, res, more) {
+			test.equal(util.isError(error), true);
+			test.equal(error.message, "This is an error, man!");
+			test.equal(res, null);
+			test.equal(more, false);
+			test.done();
+		});
+	},
+	testObjectError: function(test) {
+		test.expect(4);
 
-exports.testSimpleError = function(test) {
-    test.expect(3);
+		this.cli.invoke("objectError", function(error, res, more) {
+			test.equal(util.isError(error), true);
+			test.equal(error.message, "This is an error object, man!");
+			test.equal(res, null);
+			test.equal(more, false);
+			test.done();
+		});
+	},
+	testStreamError: function(test) {
+		test.expect(4);
 
-    rpcClient.invoke("simpleError", function(error, res, more) {
-        test.equal(error.message, "This is an error, man!");
-        test.equal(res, null);
-        test.equal(more, false);
-        test.done();
-    });
-};
-
-exports.testObjectError = function(test) {
-    test.expect(3);
-
-    rpcClient.invoke("objectError", function(error, res, more) {
-        test.equal(error.message, "This is an error object, man!");
-        test.equal(res, null);
-        test.equal(more, false);
-        test.done();
-    });
-};
-
-exports.testStreamError = function(test) {
-    test.expect(3);
-
-    rpcClient.invoke("streamError", function(error, res, more) {
-        test.equal(error.message, "This is a stream error, man!");
-        test.equal(res, null);
-        test.equal(more, false);
-        rpcServer.close();
-        test.done();
-    });
+		this.cli.invoke("streamError", function(error, res, more) {
+			test.equal(util.isError(error), true);
+			test.equal(error.message, "This is a stream error, man!");
+			test.equal(res, null);
+			test.equal(more, false);
+			test.done();
+		});
+	}
 };

@@ -22,62 +22,71 @@
 // DEALINGS IN THE SOFTWARE.
 
 var zerorpc = require(".."),
-    _ = require("underscore");
+    tutil = require("./lib/testutil");
 
-var killed = false;
+module.exports = {
+	setUp: function(cb) {
+		var self = this;
+		var heartbeat = 1000;
+		var endpoint = tutil.random_ipc_endpoint();
+		this.srv = new zerorpc.Server({
+			lazyErrorableIter: function(reply) {
+				var counter = 0;
 
-var rpcServer = new zerorpc.Server({
-    lazyErrorableIter: function(reply) {
-        var counter = 0;
+				var interval = setInterval(function() {
+					try {
+						reply(null, counter, true);
+					} catch(e) {
+						self.killed = true;
+						clearTimeout(interval);
+					}
 
-        var interval = setInterval(function() {
-            try {
-                reply(null, counter, true);
-            } catch(e) {
-                killed = true;
-                clearTimeout(interval);
-            }
+					counter++;
+				}, 250);
+			}
+		}, heartbeat);
+		this.srv.bind(endpoint);
+		this.srv.on('error', function(err) {
+			//console.log('on error', err);
+		});
+		this.cli = new zerorpc.Client({ timeout: 11000, heartbeat: heartbeat });
+		this.cli.connect(endpoint);
+		this.killed = false;
+		cb();
+	},
+	tearDown: function(cb) {
+		if (!this.cli.closed()) {
+			this.cli.close();
+		}
+		this.srv.close();
+		cb();
+	},
+	testClose: function(test) {
+		var self = this;
+		test.expect(1);
 
-            counter++;
-        }, 3000);
-    }
-});
+		var hit = false;
+		this.cli.invoke("lazyErrorableIter", function(error, res, more) {
+			if(hit) {
+				test.ok(false,
+	"lazyErrorableIter() should not have been called more than once");
+				return;
+			}
+			hit = true;
+			test.ifError(error);
+			self.cli.close();
 
-rpcServer.on("error", function(error) {});
-
-rpcServer.bind("tcp://0.0.0.0:4244");
-
-var rpcClient = new zerorpc.Client({ timeout: 11000 });
-rpcClient.connect("tcp://localhost:4244");
-
-exports.testClose = function(test) {
-    test.expect(1);
-
-    var hit = false;
-
-    rpcClient.invoke("lazyErrorableIter", function(error, res, more) {
-        if(hit) {
-            test.ok(false, "lazyErrorableIter() should not have been called more than once");
-        } else {
-            hit = true;
-            test.ifError(error);
-            rpcClient.close();
-
-            //Repeatedly poll for a closed connection - if after 20 seconds
-            //(2 heartbeats) the connection isn't closed, throw an error
-            var numChecks = 0;
-            var checkTimeout = setInterval(function() {
-                if(killed) {
-                    clearTimeout(checkTimeout);
-                    rpcServer.close();
-                    test.done();
-                    return;
-                }
-
-                if(numChecks++ == 20) {
-                    test.ok(false, "Connection not closed on the remote end");
-                }
-            }, 1000);
-        }
-    });
+			////Repeatedly poll for a closed connection - if after 20 seconds
+			////(2 heartbeats) the connection isn't closed, throw an error
+			var numChecks = 0;
+			var checkTimeout = setInterval(function() {
+				if(self.killed) {
+					clearTimeout(checkTimeout);
+					test.done();
+				} else if(numChecks++ == 20) {
+					test.ok(false, "Connection not closed on the remote end");
+				}
+			}, 1000);
+		});
+	},
 };

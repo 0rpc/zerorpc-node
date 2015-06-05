@@ -22,32 +22,38 @@
 // DEALINGS IN THE SOFTWARE.
 
 var zerorpc = require(".."),
-    _ = require("underscore");
+    tutil = require("./lib/testutil");
 
-var rpcServer = new zerorpc.Server({
-    quiet: function(reply) {
-        setTimeout(function() {
-            try {
-                reply(null, "Should not happen", false);
-            } catch (e) { /* expected */ }
-        }, 6 * 1000);
-    }
-});
+module.exports = {
+	setUp: function(cb) {
+		var endpoint = tutil.random_ipc_endpoint();
+		this.srv = new zerorpc.Server({
+			quiet: function(reply) {
+				setTimeout(function() {
+					try {
+						reply(null, "Should not happen", false);
+					} catch (e) { /* expected */ }
+				}, 6 * 1000);
+			}
+		});
+		this.srv.bind(endpoint);
+		this.cli = new zerorpc.Client({ timeout: 5 });
+		this.cli.connect(endpoint);
+		cb();
+	},
+	tearDown: function(cb) {
+		this.cli.close();
+		this.srv.close();
+		cb();
+	},
+	testQuiet: function(test) {
+		test.expect(3);
 
-rpcServer.bind("tcp://0.0.0.0:4248");
-
-var rpcClient = new zerorpc.Client({ timeout: 5 });
-rpcClient.connect("tcp://localhost:4248");
-
-exports.testQuiet = function(test) {
-    test.expect(3);
-
-    rpcClient.invoke("quiet", function(error, res, more) {
-        test.equal(error.name, "TimeoutExpired");
-        test.equal(res, null);
-        test.equal(more, false);
-        rpcServer.close();
-        rpcClient.close();
-        test.done();
-    });
+		this.cli.invoke("quiet", function(error, res, more) {
+			test.equal(error.name, "TimeoutExpired");
+			test.equal(res, null);
+			test.equal(more, false);
+			test.done();
+		});
+	}
 };
