@@ -1,6 +1,8 @@
 zerorpc-node
 ============
 
+[![Build Status](https://travis-ci.org/0rpc/zerorpc-node.svg?branch=master)](https://travis-ci.org/0rpc/zerorpc-node)
+
 ZeroRPC is a communication layer for distributed systems. zerorpc-node is a port of the original [ZeroRPC](https://github.com/0rpc/zerorpc-python) for node.js. We have full client and server support for version 3 of the protocol, and clients/servers written in the Python version can communicate transparently with those written in node.js. This project is in alpha.
 
 To install the package:
