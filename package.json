@@ -1,6 +1,6 @@
 {
     "name": "zerorpc",
-    "version": "0.9.5",
+    "version": "0.9.6",
     "main": "./index.js",
     "author": "François-Xavier Bourlet <bombela+zerorpc@gmail.com>",
     "description": "A port of ZeroRPC to node.js",
@@ -29,7 +29,7 @@
 
     "dependencies": {
         "underscore": "1.3.3",
-        "msgpack": "0.2.6",
+        "msgpack": "1.0.0",
         "node-uuid": "1.3.3",
         "zmq": "2.x"
     },
