@@ -56,15 +56,15 @@ module.exports = {
 			test.done();
 		});
 	},
-    testOverride: function(test) {
-        var timeout = 1,
-            start;
-        test.expect(4);
+	testOverride: function(test) {
+		var timeout = 1,
+			start;
+		test.expect(4);
 
-        start = Date.now();
+		start = Date.now();
 		this.cli.invoke({ timeout: timeout }, "quiet", function(error, res, more) {
-            var end = Date.now();
-            test.ok(end - start - 1000 < 30, "Timeout should be ~1 second");
+			var end = Date.now();
+			test.ok(end - start - 1000 < 30, "Timeout should be ~1 second");
 			test.equal(error.name, "TimeoutExpired");
 			test.equal(res, null);
 			test.equal(more, false);
