@@ -7,9 +7,13 @@ ZeroRPC is a communication layer for distributed systems. zerorpc-node is a port
 
 To install the package:
 
+Make sure you have [ZeroMQ](https://github.com/zeromq/libzmq) installed.
+
+Then:
+
     npm install zerorpc
 
-If you get the error `Package libzmq was not found`, take a look at [the fix for zeromq.node](https://github.com/JustinTulloss/zeromq.node/issues/55). If you get the error `Unable to load shared library <<path to zeromq.node>>/binding.node`, [make sure you run ldconfig](https://github.com/JustinTulloss/zeromq.node/issues/85). If that still doesn't work, check out [this ticket](https://github.com/JustinTulloss/zeromq.node/issues/92).
+If you get the error `Package libzmq was not found` after making sure ZeroMQ is installed, take a look at [the fix for zeromq.node](https://github.com/JustinTulloss/zeromq.node/issues/55). If you get the error `Unable to load shared library <<path to zeromq.node>>/binding.node`, [make sure you run ldconfig](https://github.com/JustinTulloss/zeromq.node/issues/85). If that still doesn't work, check out [this ticket](https://github.com/JustinTulloss/zeromq.node/issues/92).
 
 Servers
 -------
@@ -117,5 +121,3 @@ Full example:
             console.log("Done.");
         }
     });
-
-
