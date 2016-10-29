@@ -1,9 +1,9 @@
 {
-    "name": "zerorpc",
+    "name": "zerorpc-kelvinly",
     "version": "0.9.6",
     "main": "./index.js",
     "author": "François-Xavier Bourlet <bombela+zerorpc@gmail.com>",
-    "description": "A port of ZeroRPC to node.js",
+    "description": "A port of ZeroRPC to node.js -> a temp package forked from zerorpc-node as `node-uuid` needs to be upgraded due to security issue",
 
     "contributors": [{
         "name": "Francois-Xavier Bourlet",
