@@ -97,6 +97,7 @@ Methods:
 * `close()` - Closes the ZeroMQ socket.
 * `invoke(method, arguments..., callback)` - Invokes a remote method.
   * `method` is the method name.
+  * `arguments` are a list of arguments passed to the method, if there are no arguments then this argument is ommitted
   * `callback` is a method to call when there is an update. This callback is called as `callback(error, response, more)`, where error is an error object, response is the new update, and more is a boolean specifying whether new updates will be available later (i.e. whether the response is streaming).
 
 Full example:
