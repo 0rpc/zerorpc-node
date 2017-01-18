@@ -11,7 +11,9 @@ Make sure you have [ZeroMQ](https://github.com/zeromq/libzmq) installed.
 
 Then:
 
-    npm install zerorpc
+```bash
+npm install zerorpc
+```
 
 If you get the error `Package libzmq was not found` after making sure ZeroMQ is installed, take a look at [the fix for zeromq.node](https://github.com/JustinTulloss/zeromq.node/issues/55). If you get the error `Unable to load shared library <<path to zeromq.node>>/binding.node`, [make sure you run ldconfig](https://github.com/JustinTulloss/zeromq.node/issues/85). If that still doesn't work, check out [this ticket](https://github.com/JustinTulloss/zeromq.node/issues/92).
 
@@ -20,8 +22,10 @@ Servers
 
 To create a new server:
 
-    var zerorpc = require("zerorpc");
-    var server = new zerorpc.Server(context [, heartbeat]);
+```js
+var zerorpc = require("zerorpc");
+var server = new zerorpc.Server(context [, heartbeat]);
+```
 
 The constructor takes in a context object with the functions to expose
 over RPC. Only functions that do not have a leading underscore will be
@@ -47,39 +51,43 @@ Methods:
 
 Full example:
 
-    var zerorpc = require("zerorpc");
+```js
+var zerorpc = require("zerorpc");
 
-    var server = new zerorpc.Server({
-        addMan: function(sentence, reply) {
-            reply(null, sentence + ", man!");
-        },
+var server = new zerorpc.Server({
+    addMan: function(sentence, reply) {
+        reply(null, sentence + ", man!");
+    },
 
-        add42: function(n, reply) {
-            reply(null, n + 42);
-        },
+    add42: function(n, reply) {
+        reply(null, n + 42);
+    },
 
-        iter: function(from, to, step, reply) {
-            for(i=from; i<to; i+=step) {
-                reply(null, i, true);
-            }
-
-            reply();
+    iter: function(from, to, step, reply) {
+        for(i=from; i<to; i+=step) {
+            reply(null, i, true);
         }
-    });
 
-    server.bind("tcp://0.0.0.0:4242");
+        reply();
+    }
+});
 
-    server.on("error", function(error) {
-        console.error("RPC server error:", error);
-    });
+server.bind("tcp://0.0.0.0:4242");
+
+server.on("error", function(error) {
+    console.error("RPC server error:", error);
+});
+```
 
 Clients
 -------
 
 To create a new client:
 
-    var zerorpc = require("zerorpc");
-    var client = new zerorpc.Client(options);
+```js
+var zerorpc = require("zerorpc");
+var client = new zerorpc.Client(options);
+```
 
 The constructor optionally takes in an options object. Allowable options:
 
@@ -102,23 +110,25 @@ Methods:
 
 Full example:
 
-    var zerorpc = require("zerorpc");
+```js
+var zerorpc = require("zerorpc");
 
-    var client = new zerorpc.Client();
-    client.connect("tcp://127.0.0.1:4242");
+var client = new zerorpc.Client();
+client.connect("tcp://127.0.0.1:4242");
 
-    client.on("error", function(error) {
-        console.error("RPC client error:", error);
-    });
+client.on("error", function(error) {
+    console.error("RPC client error:", error);
+});
 
-    client.invoke("iter", 10, 20, 2, function(error, res, more) {
-        if(error) {
-            console.error(error);
-        } else {
-            console.log("UPDATE:", res);
-        }
+client.invoke("iter", 10, 20, 2, function(error, res, more) {
+    if(error) {
+        console.error(error);
+    } else {
+        console.log("UPDATE:", res);
+    }
 
-        if(!more) {
-            console.log("Done.");
-        }
-    });
+    if(!more) {
+        console.log("Done.");
+    }
+});
+```
