@@ -46,6 +46,8 @@ Events:
 Methods:
 
 * `bind(endpoint)` - Binds the server to the specified ZeroMQ endpoint.
+                     Returns `Promise<void>`, which is resolved when the
+                     socket was successfully bound (new in v0.9.9.beta).
 * `connect(endpoint)` - Connects the server to the specified ZeroMQ endpoint.
 * `close()` - Closes the ZeroMQ socket.
 
@@ -100,7 +102,9 @@ Events:
 
 Methods:
 
-* `bind(endpoint)` - Binds the client to the specified ZeroMQ endpoint.
+* `bind(endpoint)` - Binds the client to the specified ZeroMQ endpoint. Returns
+                     `Promise<void>`, which is resolved when the socket was
+                     successfully bound (new in v0.9.9.beta).
 * `connect(endpoint)` - Connects the client to the specified ZeroMQ endpoint.
 * `close()` - Closes the ZeroMQ socket.
 * `invoke(method, arguments..., callback)` - Invokes a remote method.

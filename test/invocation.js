@@ -37,10 +37,16 @@ module.exports = {
 				reply(null, n + 42, false);
 			}
 		});
-		this.srv.bind(endpoint);
-		this.cli = new zerorpc.Client({ timeout: 5 });
-		this.cli.connect(endpoint);
-		cb();
+		this.srv
+      .bind(endpoint)
+      .then(() => {
+        this.cli = new zerorpc.Client({ timeout: 5 });
+        this.cli.connect(endpoint);
+        cb();
+      })
+      .catch(err => {
+        console.error(err)
+      });
 	},
 	tearDown: function(cb) {
 		this.cli.close();
