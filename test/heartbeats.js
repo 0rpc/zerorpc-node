@@ -45,14 +45,20 @@ module.exports = {
 				}, 250);
 			}
 		}, heartbeat);
-		this.srv.bind(endpoint);
 		this.srv.on('error', function(err) {
 			//console.log('on error', err);
 		});
-		this.cli = new zerorpc.Client({ timeout: 11000, heartbeat: heartbeat });
-		this.cli.connect(endpoint);
-		this.killed = false;
-		cb();
+		this.srv
+      .bind(endpoint)
+      .then(() => {
+        this.cli = new zerorpc.Client({ timeout: 11000, heartbeat: heartbeat });
+        this.cli.connect(endpoint);
+        this.killed = false;
+        cb();
+      })
+      .catch(err => {
+        console.error(err)
+      });
 	},
 	tearDown: function(cb) {
 		if (!this.cli.closed()) {

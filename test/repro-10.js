@@ -35,7 +35,9 @@ module.exports = {
 			}
 		});
 
-		srv.bind(endpoint);
+    srv
+      .bind(endpoint)
+      .then(() => {
 		cli = new zerorpc.Client({ timeout: 5 });
 
 		setTimeout(function() {
@@ -49,5 +51,9 @@ module.exports = {
 				test.done();
 			});
 		}, 10000);
+      })
+      .catch(err => {
+        console.error(err)
+      });
 	}
 };
